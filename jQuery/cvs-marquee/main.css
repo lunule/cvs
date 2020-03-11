@@ -1,0 +1,141 @@
+/* ================================================================================================
+# CVS Marquee jQuery Plugin Styles
+================================================================================================ */
+
+/* Utility Classes
+------------------ */
+
+.cvs-widget--marquee .flex-container {
+	display: -ms-flexbox;
+	display: -webkit-flex;
+	display: flex;
+	-webkit-flex-direction: row;
+	-ms-flex-direction: row;
+	flex-direction: row;
+	-webkit-flex-wrap: nowrap;
+	-ms-flex-wrap: nowrap;
+	flex-wrap: nowrap;
+	-webkit-justify-content: flex-start;
+	-ms-flex-pack: start;
+	justify-content: flex-start;
+	-webkit-align-content: center;
+	-ms-flex-line-pack: center;
+	align-content: center;
+	-webkit-align-items: center;
+	-ms-flex-align: center;
+	align-items: center;
+}
+
+.cvs-widget--marquee .flex-item {
+	-webkit-order: 0;
+	-ms-flex-order: 0;
+	order: 0;
+	-webkit-flex: 0 1 auto;
+	-ms-flex: 0 1 auto;
+	flex: 0 1 auto;
+	-webkit-align-self: auto;
+	-ms-flex-item-align: auto;
+	align-self: auto;
+}
+
+/* Marquee 
+---------- */
+
+body {
+	overflow-x: hidden;
+}
+
+.cvs-widget--marquee {
+	min-height: 48px;
+	margin-bottom: 1em;
+}
+
+body > .cvs-marquee:first-child .cvs-widget--marquee {
+	margin-bottom: 0;
+}
+
+.cvs-widget--marquee .align-full {
+	margin: 0 calc(50% - 50vw);
+	max-width: 100vw;
+	width: 100vw;	
+}
+
+.cvs-widget--marquee .marquee {
+	position: relative;
+	width: 100%;
+}
+
+.cvs-widget--marquee .rates-marquee {
+	background: #000;
+	color: #fff;
+	font: normal normal 24px/24px "Helvetica Neue", Helvetica, Arial, sans-serif;
+	padding: .75em 0;	
+}
+
+.cvs-widget--marquee [class*="data-"] {}
+
+.cvs-widget--marquee [class*="item-"] {
+	margin: 0 15px;
+}
+
+.cvs-widget--marquee [class*="cell-"]:not(:first-child) {
+	margin-left: 15px;
+}
+
+.cvs-widget--marquee [class*="header-"] {
+	font-size: 11px;
+	line-height: 13px;
+}
+
+.cvs-widget--marquee .cell-flag {
+	display: inline-block;
+	width: 24px;
+	height: 24px;
+	position: relative;
+	overflow: hidden;
+	border-radius: 50%;
+}
+
+.cvs-widget--marquee .cell-flag img {
+	height: 28px;
+	width: auto;
+	border: none;
+	box-shadow: none;
+
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate( -50%, -50% );
+}
+
+.cvs-widget--marquee [class*="iso-"] {
+	margin-right: 10px;
+	opacity: .8;
+}
+
+.cvs-widget--marquee [class*="vals-"] {}
+
+.cvs-widget--marquee [class*="val-"] {
+	font-weight: 700;
+}
+
+body > .cvs-marquee .cvs-widget--marquee {
+	margin-top: 0!important;
+}
+
+.cvs-widget--marquee .cell-isflagged {
+	display: none;
+}
+
+/* Timestamp 
+------------ */
+
+.cvs-widget--marquee .cvs-timestamp p {
+    padding: 3px 28px 3px 0px;
+    margin-top: 15px;
+    border-top: rgba( 255, 255, 255, .3333 ) solid 1px;	
+	font: italic 400 12px/18px "Helvetica Neue", Helvetica, Arial, sans-serif;	
+    text-align: right;
+
+  	opacity: .75;
+}

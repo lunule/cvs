@@ -1,0 +1,4 @@
+#toplevel_page_cvs-general .wp-menu-image,
+#toplevel_page_cvs-calc-settings .wp-menu-image {
+    background: transparent url('../img/world.svg') center center/ 20px 20px no-repeat;
+}
