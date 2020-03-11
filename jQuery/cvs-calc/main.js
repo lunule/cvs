@@ -9,8 +9,8 @@
 
 		options = $.extend({
 			calcLabels: {
-				iBuy: 			'I Buy',
-				iSell:	 		'I Sell',
+				webuy: 			'We Buy',
+				wesell:	 		'We Sell',
 				youPay: 		'You pay',
 				youReceive:		'You Receive',
 			},
@@ -22,7 +22,7 @@
 
 			// Set up constants and build the calcualtor skeleton
 			const $this 	= $(this),
-				  calcHtml 	= '<form class="cvs-currencies-form"><div class="currency-toggle"><a href="#" class="btn buy active">'+options.calcLabels['iBuy']+'</a><a href="#" class="btn sell">'+options.calcLabels['iSell']+'</a></div><div class="form-field clearfix"> <label for="pay">'+options.calcLabels['youPay']+'</label><div class="flex-container"><div class="form-field-input"><input value="" class="pay"></div><div class="form-field-select"><select class="pay-currency"><option value="">Select Currency</option></select></div></div></div><div class="form-field clearfix"><label for="receive">'+options.calcLabels['youReceive']+'</label><div class="flex-container"><div class="form-field-input"><input placeholder="" class="receive"></div><div class="form-field-select"><select class="receive-currency" disabled><option value="CAD">CAD</option></select></div></div></div></form>';
+				  calcHtml 	= '<form class="cvs-currencies-form"><div class="currency-toggle"><a href="#" class="btn buy active">'+options.calcLabels['webuy']+'</a><a href="#" class="btn sell">'+options.calcLabels['wesell']+'</a></div><div class="form-field clearfix"> <label for="pay">'+options.calcLabels['youPay']+'</label><div class="flex-container"><div class="form-field-input"><input value="" class="pay"></div><div class="form-field-select"><select class="pay-currency"><option value="">Select Currency</option></select></div></div></div><div class="form-field clearfix"><label for="receive">'+options.calcLabels['youReceive']+'</label><div class="flex-container"><div class="form-field-input"><input placeholder="" class="receive" disabled></div><div class="form-field-select"><select class="receive-currency" disabled><option value="CAD">CAD</option></select></div></div></div></form>';
 
 		    $( '<div class="cvs-widget--calculator cvs-widget" />' )
 				.appendTo( $this )
@@ -59,28 +59,61 @@
 
 				$(data).find('RATE').each(function(i, v){
 
+					// set up xml parsing
 					let xmlText 	= new XMLSerializer().serializeToString(v),
 						parser 		= new DOMParser(), 
-						xmlDoc 		= parser.parseFromString( xmlText,"text/xml"),
-						flagOrig 	= xmlDoc.getElementsByTagName("FLAGURL")[0].childNodes[0].nodeValue,
+						xmlDoc 		= parser.parseFromString( xmlText,"text/xml");
+
+					// PATCH - make the function prepared to empty XML tags.
+					// By default the parser doesn't return the tag is it's empty, resulting in a
+					// javascript error. We can fix this by checking the return tag is undefined - 
+					// if it is, it means the XML tag is empty, in which case we define an empty
+					// string value that we can use in other functions to further checks.	
+
+					// init xml tag values and check if tags are empty
+					let flagTag 		= xmlDoc.getElementsByTagName("FLAGURL")[0].childNodes[0],
+						codeTag 		= xmlDoc.getElementsByTagName("ISO")[0].childNodes[0],
+						countryTag 		= xmlDoc.getElementsByTagName("COUNTRY")[0].childNodes[0],
+						currencyTag		= xmlDoc.getElementsByTagName("NAME")[0].childNodes[0],
+						webuyTag 		= xmlDoc.getElementsByTagName("WEBUY")[0].childNodes[0],
+						wesellTag 		= xmlDoc.getElementsByTagName("WESELL")[0].childNodes[0],
+						invbuyTag 		= xmlDoc.getElementsByTagName("INVBUY")[0].childNodes[0],
+						invsellTag		= xmlDoc.getElementsByTagName("INVSELL")[0].childNodes[0],
+						hasFlag 		= ( undefined !== flagTag ),
+						hasCode			= ( undefined !== codeTag ),
+						hasCountry		= ( undefined !== countryTag ),
+						hasCurrency		= ( undefined !== currencyTag ),
+						hasWebuy		= ( undefined !== webuyTag ),
+						hasWesell		= ( undefined !== wesellTag ),
+						hasInvbuy		= ( undefined !== invbuyTag ),
+						hasInvsell		= ( undefined !== invsellTag );
+
+					// flag value needs some extra care
+					let	flagOrig 	= flagTag.nodeValue,
 						// update uppercase extensions to lowercase (XML includes uc 
 						// flag extensions, while the real extensions are in lc )
 						extOrig 	= flagOrig.split('.').pop(),
 						extLc 		= extOrig.toLowerCase();
 
-					flag 	 	= options.cvsFolder.replace(/\/?$/, '/') + 'flags/' + flagOrig.substr(0, flagOrig.lastIndexOf(".")) + '.' + extLc,
-					code 		= xmlDoc.getElementsByTagName("ISO")[0].childNodes[0].nodeValue,
-					country 	= xmlDoc.getElementsByTagName("COUNTRY")[0].childNodes[0].nodeValue,
-					currency 	= xmlDoc.getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-					webuy 		= xmlDoc.getElementsByTagName("WEBUY")[0].childNodes[0].nodeValue,
-					wesell 		= xmlDoc.getElementsByTagName("WESELL")[0].childNodes[0].nodeValue,
-					invbuy 		= xmlDoc.getElementsByTagName("INVBUY")[0].childNodes[0].nodeValue,
-					invsell 	= xmlDoc.getElementsByTagName("INVSELL")[0].childNodes[0].nodeValue;
+					flag 	 	= hasFlag
+									? options.cvsFolder.replace(/\/?$/, '/') + 'flags/' + flagOrig.substr(0, flagOrig.lastIndexOf(".")) + '.' + extLc
+									: '';
+
+					// set up the other tags
+					code 		= hasCode 		? codeTag.nodeValue 	: '',
+					country 	= hasCountry 	? countryTag.nodeValue 	: '',
+					currency 	= hasCurrency 	? currencyTag.nodeValue : '',
+					webuy 		= hasWebuy 		? webuyTag.nodeValue 	: '',
+					wesell 		= hasWesell 	? wesellTag.nodeValue 	: '',
+					invbuy 		= hasInvbuy 	? invbuyTag.nodeValue 	: '',
+					invsell 	= hasInvsell 	? invsellTag.nodeValue 	: '';
 
 					xmlRates
 						.push( 
 							{ 
-								'flag': 	'<img src="' + flag + '" width="" height="" alt="" />', 
+								'flag': 	hasFlag
+												? '<img src="' + flag + '" width="" height="" alt="" />'
+												: '', 
 								'code': 	code,
 								'country': 	country, 
 								'currency': currency,
@@ -130,12 +163,21 @@
 
 				$.each( xmlRates, function( index, value ) {
 
-					const $this 	= $(this),
-						  iso 		= value['code'];
+					// PATCH - we only add the option if neither webuy nor wesell has an 
+					// empty string value.
+					if ( 
+							( '' !== value['webuy'] ) &&
+							( '' !== value['wesell'] )
+						) {
 
-					let $currOption = $( '<option value="' + iso + '" data-webuy="' + value['webuy'] + '" data-wesell="' + value['wesell'] + '">' + iso + '</option>' );
-					
-					$thisCalc.find('.pay-currency').append( $currOption );
+						const $this 	= $(this),
+							  iso 		= value['code'];
+
+						let $currOption = $( '<option value="' + iso + '" data-webuy="' + value['webuy'] + '" data-wesell="' + value['wesell'] + '">' + iso + '</option>' );
+						
+						$thisCalc.find('.pay-currency').append( $currOption );
+
+					}
 
 				});
 
@@ -242,6 +284,14 @@
 								return ( i['code'] === optVal );
 						  	});
 
+						    // PATCH - if either the WEBUY or the WESELL XML tag is empty, 
+						    // we leave the function. 
+						    if ( 
+						    		( '' == theRate[0]['webuy'] ) ||
+						    		( '' == theRate[0]['wesell'] ) 
+						    	)
+						    	return;
+
 						  	$s.append( '<option value="' + v + '" data-webuy="' + theRate[0]['webuy'] + '" data-wesell="' + theRate[0]['wesell'] + '">' + v + '</option>' );
 
 							// Re-sort the select options
@@ -263,7 +313,7 @@
 					// 
 					// - 	the new rates array length is smaller than the current array 
 					// 		length
-					// - 	the grep lookup results ( rate where the ['code'] value equals to
+					// - 	the grep lookup returns ( rate where the ['code'] value equals to
 					// 		the currently parsed option's value ) either an undefined or a 
 					// 		zero length newRate value   
 					// ----------------------------------------------------------------------------
@@ -286,15 +336,15 @@
 								) {
 
 								// We need to handle the selected option as well:
-								// 1. 	If the removeable item IS the item currently selected in the 
-								// 		.pay-currency selector:
+								// 1. 	If the removeable item IS the item currently selected 
+								// 		in the .pay-currency selector:
 								// 		1A - 	is USD available AND THE REMOVEABLE CURRENCY IS 
 								// 				NOT USD? >> Set selected to USD
 								// 		1B - 	in any other case set selected to the first 
 								// 				option DIFFERENT FROM THE REMOVEABLE ITEM 
 								// 				in the option set
-								// 2. 	If the removeable item IS NOT the item currently selected in
-								// 		the .pay-currency selector:
+								// 2. 	If the removeable item IS NOT the item currently selected
+								// 		in the .pay-currency selector:
 								// 		Keep the selection!! 
 								if ( v == currSelected ) {
 
@@ -334,9 +384,9 @@
 					// 
 					// We have two options here:
 					// Opt1 - 	If the `webuy` value gets updated, we need to update
-					// 			the `I Sell` tab's `You Receive` value!!!
+					// 			the `We Sell` tab's `You Receive` value!!!
 					// Opt2 - 	If the `wesell` value gets updated, we need to update
-					// 			the `I Buy` tab's `You Receive` value!!!				
+					// 			the `We Buy` tab's `You Receive` value!!!				
 					$.each( sOpts, function( i, v ) {
 
 						let currVal 	= $(this).val(),
@@ -360,6 +410,20 @@
 									( currWebuy !== newWebuy ) ||
 									( currWesell !== newWesell )
 								) {
+
+							    // PATCH - if either the new WEBUY or the new WESELL XML tag is 
+							    // empty, we leave the function. 
+							    if ( 
+							    		( '' == newWebuy ) ||
+							    		( '' == newWesell ) 
+							    	) {
+
+							    	$(this).remove();
+
+							    	// Update notice
+									currencyUpdatedNotice( 'removed', false, false, currVal );								
+							    return;
+								}
 
 							  	if ( currWebuy !== newWebuy ) 
 							  		$(this).attr('data-webuy', newWebuy);
@@ -580,7 +644,7 @@
 
 					})	
 
-					/* "I Buy" & "I Sell" buttons click event handler
+					/* "We Buy" & "We Sell" buttons click event handler
 					------------------------------------------------- */
 
 					$thisCalc.find('.currency-toggle').find('.btn').on('click', function(e) {
@@ -612,6 +676,20 @@
 							}							
 
 						}
+
+						if ( $this.closest('.currency-toggle').find('.active').is('.buy') ) {
+
+							$this.closest('.cvs-currencies-form').find('label[for="pay"]').text( options.calcLabels['youPay'] );
+							$this.closest('.cvs-currencies-form').find('label[for="receive"]').text( options.calcLabels['youReceive'] );							
+
+						}
+
+						if ( $this.closest('.currency-toggle').find('.active').is('.sell') ) {
+
+							$this.closest('.cvs-currencies-form').find('label[for="pay"]').text( options.calcLabels['youReceive'] );
+							$this.closest('.cvs-currencies-form').find('label[for="receive"]').text( options.calcLabels['youPay'] );							
+
+						}						
 
 					})
 

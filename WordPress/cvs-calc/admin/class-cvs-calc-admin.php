@@ -308,7 +308,7 @@ class Clearviewsys_Calculator_Admin {
 		// Fields
 		add_settings_field(
 			'ibuy_label',
-			'Custom "I Buy" Button Label', 
+			'Custom "We Buy" Button Label', 
 			array( $this, 'ibuy_label_cb' ),
 			'section-calculator-labels',
 			'section_calc'           
@@ -316,7 +316,7 @@ class Clearviewsys_Calculator_Admin {
 
 		add_settings_field(
 			'isell_label',
-			'Custom "I Sell" Button Label', 
+			'Custom "We Sell" Button Label', 
 			array( $this, 'isell_label_cb' ),
 			'section-calculator-labels',
 			'section_calc'           
