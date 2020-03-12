@@ -108,9 +108,15 @@ class Clearviewsys_Marquee_Sc {
 		// of site_url()
 		// Case 2 - valid url >> nothing to do, except trailingslashit
 		if ( !filter_var( $cvs_folder, FILTER_VALIDATE_URL ) ) :
-			$cvs_folder = trailingslashit( get_site_url() . $cvs_folder . '/cvs/' ); 
+
+			$cvs_folder = ( '/wp-content' == $cvs_folder )
+							? trailingslashit( get_site_url() . $cvs_folder . '/cvs/' )
+							: trailingslashit( get_site_url() . $cvs_folder . '/' );
+
 		else:
-			$cvs_folder = trailingslashit( $cvs_folder . '/cvs/' );
+
+			$cvs_folder = trailingslashit( $cvs_folder . '/' );
+
 		endif;
 
 		/* Marquee settings 
