@@ -118,20 +118,22 @@
 						parser 		= new DOMParser(), 
 						xmlDoc 		= parser.parseFromString( xmlText,"text/xml");
 
-					flag 	 	= xmlDoc.getElementsByTagName("FLAGURL")[0].childNodes[0].nodeValue,
-					code 		= xmlDoc.getElementsByTagName("ISO")[0].childNodes[0].nodeValue,
-					country 	= xmlDoc.getElementsByTagName("COUNTRY")[0].childNodes[0].nodeValue,
-					currency 	= xmlDoc.getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-					webuy 		= xmlDoc.getElementsByTagName("WEBUY")[0].childNodes[0].nodeValue,
-					wesell 		= xmlDoc.getElementsByTagName("WESELL")[0].childNodes[0].nodeValue,
-					invbuy 		= xmlDoc.getElementsByTagName("INVBUY")[0].childNodes[0].nodeValue,
-					invsell 	= xmlDoc.getElementsByTagName("INVSELL")[0].childNodes[0].nodeValue,
-					isflagged 	= xmlDoc.getElementsByTagName("ISFLAGGED")[0].childNodes[0].nodeValue;
+					flag 	 	= xmlDoc.getElementsByTagName("FLAGURL")[0].innerHTML,
+					code 		= xmlDoc.getElementsByTagName("ISO")[0].innerHTML,
+					country 	= xmlDoc.getElementsByTagName("COUNTRY")[0].innerHTML,
+					currency 	= xmlDoc.getElementsByTagName("NAME")[0].innerHTML,
+					webuy 		= xmlDoc.getElementsByTagName("WEBUY")[0].innerHTML,
+					wesell 		= xmlDoc.getElementsByTagName("WESELL")[0].innerHTML,
+					invbuy 		= xmlDoc.getElementsByTagName("INVBUY")[0].innerHTML,
+					invsell 	= xmlDoc.getElementsByTagName("INVSELL")[0].innerHTML,
+					isflagged 	= xmlDoc.getElementsByTagName("ISFLAGGED")[0].innerHTML;
 
 					xmlRates
 						.push( 
 							{ 
-								'flag': 		deconstructImgSrc( flag ), 
+								'flag': 		( '' === flag  ) 
+													? ''
+													: deconstructImgSrc( flag ), 
 								'code': 		code,
 								'country': 		country, 
 								'currency': 	currency,
@@ -353,7 +355,9 @@
 								return ( i['code'] === iso );
 							  }),
 							  newFlag 		= newRate[0]['flag'],			
-							  newFlagUrl 	= craftImgElemStr( newFlag ),
+							  newFlagUrl 	= ( '' === newFlag ) 
+							  					? ''
+							  					: craftImgElemStr( newFlag ),
 							  newWebuy 		= newRate[0]['webuy'],
 							  newWesell 	= newRate[0]['wesell'],
 							  newInvbuy 	= newRate[0]['invbuy'],
@@ -374,7 +378,9 @@
 							  $msg 			= $(thisMessage),
 							  oldFlagHTML 	= $msg[0]['children'][0]['innerHTML'],
 							  oldFlagSrc 	= $( oldFlagHTML ).attr('src'),
-							  oldFlag 		= deconstructImgSrc( oldFlagSrc, false ), 
+							  oldFlag 		= ( '' === oldFlagHTML )
+							  					? ''
+							  					: deconstructImgSrc( oldFlagSrc, false ), 
 							  oldWebuy 		= oldRate[0]['webuy'],
 							  oldWesell 	= oldRate[0]['wesell'],
 							  oldInvbuy		= oldRate[0]['invbuy'],
@@ -389,7 +395,7 @@
 											? true
 											: false;
 
-						//console.log( thisMessage );
+						//console.log( oldFlagHTML );
 						//console.log( $(v) );
 						//console.log( hasChange );												
 
@@ -405,6 +411,7 @@
 							// console.log( valContent );
 
 						  	$flagElem.html( newFlagUrl );
+						  	
 						  	$isoElem.text( iso );
 						  	$webuyElem.text(  newWebuy);
 						  	$wesellElem.text(  newWesell);
@@ -442,7 +449,9 @@
 							  thisRate 		= $.grep( newXmlRates, function( i, v ) {
 								return ( i['code'] === iso );
 							  }),
-							  flag 			= craftImgElemStr( thisRate[0]['flag'] ),
+							  flag 			= ( '' === thisRate[0]['flag'] ) 
+							  					? ''
+							  					: craftImgElemStr( thisRate[0]['flag'] ),
 							  isflagged 	= thisRate[0]['isflagged'],
 							  webuy 		= thisRate[0]['webuy'],
 							  wesell 		= thisRate[0]['wesell'],
@@ -531,7 +540,9 @@
 					$.each( xmlRates, function() {
 
 						const iso 			= this['code'],
-							  flag 			= craftImgElemStr( this['flag'] ),
+							  flag 			= ( '' === this['flag'] )
+							  					? ''
+							  					: craftImgElemStr( this['flag'] ),
 							  webuy 		= this['webuy'],
 							  wesell 		= this['wesell'],
 							  invbuy 		= this['invbuy'],

@@ -59,61 +59,30 @@
 
 				$(data).find('RATE').each(function(i, v){
 
-					// set up xml parsing
 					let xmlText 	= new XMLSerializer().serializeToString(v),
 						parser 		= new DOMParser(), 
-						xmlDoc 		= parser.parseFromString( xmlText,"text/xml");
-
-					// PATCH - make the function prepared to empty XML tags.
-					// By default the parser doesn't return the tag is it's empty, resulting in a
-					// javascript error. We can fix this by checking the return tag is undefined - 
-					// if it is, it means the XML tag is empty, in which case we define an empty
-					// string value that we can use in other functions to further checks.	
-
-					// init xml tag values and check if tags are empty
-					let flagTag 		= xmlDoc.getElementsByTagName("FLAGURL")[0].childNodes[0],
-						codeTag 		= xmlDoc.getElementsByTagName("ISO")[0].childNodes[0],
-						countryTag 		= xmlDoc.getElementsByTagName("COUNTRY")[0].childNodes[0],
-						currencyTag		= xmlDoc.getElementsByTagName("NAME")[0].childNodes[0],
-						webuyTag 		= xmlDoc.getElementsByTagName("WEBUY")[0].childNodes[0],
-						wesellTag 		= xmlDoc.getElementsByTagName("WESELL")[0].childNodes[0],
-						invbuyTag 		= xmlDoc.getElementsByTagName("INVBUY")[0].childNodes[0],
-						invsellTag		= xmlDoc.getElementsByTagName("INVSELL")[0].childNodes[0],
-						hasFlag 		= ( undefined !== flagTag ),
-						hasCode			= ( undefined !== codeTag ),
-						hasCountry		= ( undefined !== countryTag ),
-						hasCurrency		= ( undefined !== currencyTag ),
-						hasWebuy		= ( undefined !== webuyTag ),
-						hasWesell		= ( undefined !== wesellTag ),
-						hasInvbuy		= ( undefined !== invbuyTag ),
-						hasInvsell		= ( undefined !== invsellTag );
-
-					// flag value needs some extra care
-					let	flagOrig 	= flagTag.nodeValue,
+						xmlDoc 		= parser.parseFromString( xmlText,"text/xml"),
+						flagOrig 	= xmlDoc.getElementsByTagName("FLAGURL")[0].innerHTML,
 						// update uppercase extensions to lowercase (XML includes uc 
 						// flag extensions, while the real extensions are in lc )
 						extOrig 	= flagOrig.split('.').pop(),
-						extLc 		= extOrig.toLowerCase();
-
-					flag 	 	= hasFlag
-									? options.cvsFolder.replace(/\/?$/, '/') + 'flags/' + flagOrig.substr(0, flagOrig.lastIndexOf(".")) + '.' + extLc
-									: '';
-
-					// set up the other tags
-					code 		= hasCode 		? codeTag.nodeValue 	: '',
-					country 	= hasCountry 	? countryTag.nodeValue 	: '',
-					currency 	= hasCurrency 	? currencyTag.nodeValue : '',
-					webuy 		= hasWebuy 		? webuyTag.nodeValue 	: '',
-					wesell 		= hasWesell 	? wesellTag.nodeValue 	: '',
-					invbuy 		= hasInvbuy 	? invbuyTag.nodeValue 	: '',
-					invsell 	= hasInvsell 	? invsellTag.nodeValue 	: '';
+						extLc 		= extOrig.toLowerCase(),
+						flag 	 	= options.cvsFolder.replace(/\/?$/, '/') + flagOrig.substr(0, flagOrig.lastIndexOf(".")) + '.' + extLc,
+						code 		= xmlDoc.getElementsByTagName("ISO")[0].innerHTML,
+						country 	= xmlDoc.getElementsByTagName("COUNTRY")[0].innerHTML,
+						currency 	= xmlDoc.getElementsByTagName("NAME")[0].innerHTML,
+						webuy 		= xmlDoc.getElementsByTagName("WEBUY")[0].innerHTML,
+						wesell 		= xmlDoc.getElementsByTagName("WESELL")[0].innerHTML,
+						invbuy 		= xmlDoc.getElementsByTagName("INVBUY")[0].innerHTML,
+						invsell 	= xmlDoc.getElementsByTagName("INVSELL")[0].innerHTML,
+						isflagged 	= xmlDoc.getElementsByTagName("ISFLAGGED")[0].innerHTML;
 
 					xmlRates
 						.push( 
 							{ 
-								'flag': 	hasFlag
-												? '<img src="' + flag + '" width="" height="" alt="" />'
-												: '', 
+								'flag': 		( '' == flagOrig )
+													? '' 
+													: '<img src="' + flag + '" width="" height="" alt="" />',
 								'code': 	code,
 								'country': 	country, 
 								'currency': currency,
@@ -421,8 +390,10 @@
 							    	$(this).remove();
 
 							    	// Update notice
-									currencyUpdatedNotice( 'removed', false, false, currVal );								
-							    return;
+									currencyUpdatedNotice( 'removed', false, false, currVal );	
+
+							    	return;
+								
 								}
 
 							  	if ( currWebuy !== newWebuy ) 

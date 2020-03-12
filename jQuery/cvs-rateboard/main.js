@@ -264,26 +264,27 @@ var $jscomp=$jscomp||{};$jscomp.scope={},$jscomp.findInternal=function(t,e,n){t 
 					let xmlText 	= new XMLSerializer().serializeToString(v),
 						parser 		= new DOMParser(), 
 						xmlDoc 		= parser.parseFromString( xmlText,"text/xml"),
-						flagOrig 	= xmlDoc.getElementsByTagName("FLAGURL")[0].childNodes[0].nodeValue,
+						flagOrig 	= xmlDoc.getElementsByTagName("FLAGURL")[0].innerHTML,
 						// update uppercase extensions to lowercase (XML includes uc 
 						// flag extensions, while the real extensions are in lc )
 						extOrig 	= flagOrig.split('.').pop(),
-						extLc 		= extOrig.toLowerCase();
-
-					flag 	 	= options.cvsFolder.replace(/\/?$/, '/') + flagOrig.substr(0, flagOrig.lastIndexOf(".")) + '.' + extLc,
-					code 		= xmlDoc.getElementsByTagName("ISO")[0].childNodes[0].nodeValue,
-					country 	= xmlDoc.getElementsByTagName("COUNTRY")[0].childNodes[0].nodeValue,
-					currency 	= xmlDoc.getElementsByTagName("NAME")[0].childNodes[0].nodeValue,
-					webuy 		= xmlDoc.getElementsByTagName("WEBUY")[0].childNodes[0].nodeValue,
-					wesell 		= xmlDoc.getElementsByTagName("WESELL")[0].childNodes[0].nodeValue,
-					invbuy 		= xmlDoc.getElementsByTagName("INVBUY")[0].childNodes[0].nodeValue,
-					invsell 	= xmlDoc.getElementsByTagName("INVSELL")[0].childNodes[0].nodeValue,
-					isflagged 	= xmlDoc.getElementsByTagName("ISFLAGGED")[0].childNodes[0].nodeValue;
+						extLc 		= extOrig.toLowerCase(),
+						flag 	 	= options.cvsFolder.replace(/\/?$/, '/') + flagOrig.substr(0, flagOrig.lastIndexOf(".")) + '.' + extLc,
+						code 		= xmlDoc.getElementsByTagName("ISO")[0].innerHTML,
+						country 	= xmlDoc.getElementsByTagName("COUNTRY")[0].innerHTML,
+						currency 	= xmlDoc.getElementsByTagName("NAME")[0].innerHTML,
+						webuy 		= xmlDoc.getElementsByTagName("WEBUY")[0].innerHTML,
+						wesell 		= xmlDoc.getElementsByTagName("WESELL")[0].innerHTML,
+						invbuy 		= xmlDoc.getElementsByTagName("INVBUY")[0].innerHTML,
+						invsell 	= xmlDoc.getElementsByTagName("INVSELL")[0].innerHTML,
+						isflagged 	= xmlDoc.getElementsByTagName("ISFLAGGED")[0].innerHTML;
 
 					xmlRates
 						.push( 
 							{ 
-								'flag': 		'<img src="' + flag + '" width="" height="" alt="" />', 
+								'flag': 		( '' == flagOrig )
+													? '' 
+													: '<img src="' + flag + '" width="" height="" alt="" />', 
 								'code': 		code,
 								'country': 		country, 
 								'currency': 	currency,
@@ -391,7 +392,10 @@ var $jscomp=$jscomp||{};$jscomp.scope={},$jscomp.findInternal=function(t,e,n){t 
 				  				tdType 		= $(tdElem).data('type'),
 				  				tdNewVal 	= newIso[0][tdType];
 							
-				  			if ( 'flag' == tdType ) {
+				  			if ( 
+				  					( 'flag' == tdType ) &&
+				  					( '' !== tdOldVal )
+				  				) {
 
 								tdOldVal = craftImgElemStr( $(tdOldVal).attr('src') );
 
@@ -456,7 +460,10 @@ var $jscomp=$jscomp||{};$jscomp.scope={},$jscomp.findInternal=function(t,e,n){t 
 							let header 	= api.column(col_i).header(),
 								theKey 	= $(header).data('type');
 
-							if ( 'flag' == theKey ) {
+							if ( 
+									( 'flag' == theKey ) &&
+									( '' !== v[theKey] )
+								) {
 
 								const flagElem = craftImgElemStr( $( v[theKey] ).attr('src') );
 								newCellsArr.push( flagElem );
