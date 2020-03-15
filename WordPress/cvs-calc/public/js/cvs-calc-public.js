@@ -348,11 +348,12 @@ jQuery(document).ready( function($) {
 								// 		1B - 	in any other case set selected to the first 
 								// 				option DIFFERENT FROM THE REMOVEABLE ITEM 
 								// 				in the option set
-								// 2. 	If the removeable item IS NOT the item currently selected in
-								// 		the .pay-currency selector:
-								// 		Keep the selection!! 
+								// 2. 	If the removeable item IS NOT the item currently selected
+								//  	in the .pay-currency selector:
+								// 		We don't change a thing!! 
 								if ( v == currSelected ) {
 
+									// 1A
 									if ( 
 											( $s.find('option[value="USD"]').length > 0 ) &&
 											( v !== 'USD' ) 
@@ -360,16 +361,13 @@ jQuery(document).ready( function($) {
 
 										$s.val('USD');
 									
+									// 1B
 									} else {
 
 										$s.val( $s.find('option:first:not([value="' + v + '"])') );
 
 									}
 
-								} else {
-
-									$s.val( currVal );
-								
 								}
 
 								$(this).remove();
@@ -389,9 +387,9 @@ jQuery(document).ready( function($) {
 					// 
 					// We have two options here:
 					// Opt1 - 	If the `webuy` value gets updated, we need to update
-					// 			the `We Sell` tab's `You Receive` value!!!
+					// 			the `We Buy` tab's `You Receive` value!!!
 					// Opt2 - 	If the `wesell` value gets updated, we need to update
-					// 			the `We Buy` tab's `You Receive` value!!!				
+					// 			the `We Sell` tab's `You Receive` value!!!				
 					$.each( sOpts, function( i, v ) {
 
 						let currVal 	= $(this).val(),
@@ -411,6 +409,7 @@ jQuery(document).ready( function($) {
 						  	let newWebuy 	= newRate[0]['webuy'],
 						  		newWesell 	= newRate[0]['wesell'];
 
+						  	// Update only if the new value differs from the old/current one
 							if ( 
 									( currWebuy !== newWebuy ) ||
 									( currWesell !== newWesell )
@@ -426,8 +425,10 @@ jQuery(document).ready( function($) {
 							    	$(this).remove();
 
 							    	// Update notice
-									currencyUpdatedNotice( 'removed', false, false, currVal );								
-							    return;
+									currencyUpdatedNotice( 'removed', false, false, currVal );	
+
+							    	return;
+								
 								}
 
 							  	if ( currWebuy !== newWebuy ) 
@@ -441,7 +442,7 @@ jQuery(document).ready( function($) {
 									  webuy 		= $s.find('option:selected').attr('data-webuy'),
 									  wesell 		= $s.find('option:selected').attr('data-wesell'),
 									  isSell		= $thisCalc.find('.currency-toggle').find('.sell').is('.active'),
-									  multiplier 	= isSell ? webuy : wesell,
+									  multiplier 	= isSell ? wesell : webuy,
 									  newReceive	= ( currPay * multiplier ).toFixed(2);
 
 								$thisCalc.find('.receive').val( newReceive );	
@@ -482,7 +483,7 @@ jQuery(document).ready( function($) {
 
 				fillXmlRatesArr( xml );
 
-				newXmlRates 	= xmlRates,
+				newXmlRates 	= xmlRates;
 				newTimestamp 	= timestamp;
 
 				/* var css_y = "color: yellow";
@@ -567,7 +568,7 @@ jQuery(document).ready( function($) {
 
 					fillXmlRatesArr( data );
 
-					var css = 'color: orange';
+					//var css = 'color: orange';
 					//console.log( '%c' + xmlRates[0]['webuy'], css );
 
 				})
@@ -591,7 +592,7 @@ jQuery(document).ready( function($) {
 							  newWesell 	= $s.find('option:selected').attr('data-wesell'),
 							  newWebuy 		= $s.find('option:selected').attr('data-webuy'),
 							  isSell		= $thisCalc.find('.currency-toggle').find('.sell').is('.active'),
-							  multiplier 	= isSell ? newWebuy : newWesell;
+							  multiplier 	= isSell ? newWesell : newWebuy;
 						
 						newVal = ( newDef * multiplier ).toFixed(2); 
 
@@ -613,7 +614,7 @@ jQuery(document).ready( function($) {
 							  wesell 		= $s.find('option:selected').attr('data-wesell'),
 							  webuy 		= $s.find('option:selected').attr('data-webuy'),
 							  isSell		= $thisCalc.find('.currency-toggle').find('.sell').is('.active'),
-							  multiplier 	= isSell ? webuy : wesell;
+							  multiplier 	= isSell ? wesell : webuy;
 
 						newVal = ( thisVal * multiplier ).toFixed(2);
 
@@ -637,14 +638,14 @@ jQuery(document).ready( function($) {
 							  wesell 		= $s.find('option:selected').attr('data-wesell'),
 							  webuy 		= $s.find('option:selected').attr('data-webuy'),
 							  isSell		= $thisCalc.find('.currency-toggle').find('.sell').is('.active'),
-							  multiplier 	= isSell ? webuy : wesell;
+							  multiplier 	= isSell ? wesell : webuy;
 
 						newVal = ( thisVal / multiplier ).toFixed(2); 
 
-						if ( '' !== $thisCalc.find('.pay').val() ) {				
+						if ( '' !== $thisCalc.find('.receive').val() ) {				
 							$thisCalc.find('.pay').val( newVal );
 						} else {
-							$thisCalc.find('.receive').val('');						
+							$thisCalc.find('.pay').val('');						
 						}						
 
 					})	
@@ -669,8 +670,8 @@ jQuery(document).ready( function($) {
 							const payVal 		= $thisCalc.find('.pay').val(),
 								  selectedCurr 	= $thisCalc.find('.pay-currency').find(':selected').val(),
 								  multiplier 	= $this.hasClass('buy') 
-								  					? $s.find('option:selected').attr('data-wesell')
-								  					: $s.find('option:selected').attr('data-webuy');
+								  					? $s.find('option:selected').attr('data-webuy')
+								  					: $s.find('option:selected').attr('data-wesell');
 
 							newVal = ( payVal * multiplier ).toFixed(2); 
 
@@ -694,9 +695,9 @@ jQuery(document).ready( function($) {
 							$this.closest('.cvs-currencies-form').find('label[for="pay"]').text( options.calcLabels['youReceive'] );
 							$this.closest('.cvs-currencies-form').find('label[for="receive"]').text( options.calcLabels['youPay'] );							
 
-						}
+						}						
 
-					})					
+					})
 
 				})
 				// ================================================================================
