@@ -181,6 +181,7 @@ var $jscomp=$jscomp||{};$jscomp.scope={},$jscomp.findInternal=function(t,e,n){t 
 				type: 'GET',
 				url: options.cvsFolder.replace(/\/?$/, '/') + 'rateswithcss.xml',
 				dataType: 'xml',
+				cache: false,
 			});
 
 			function updateCellValues( apiCell, $cell,tdOldVal, tdNewVal, tdType ) {
@@ -839,6 +840,7 @@ var $jscomp=$jscomp||{};$jscomp.scope={},$jscomp.findInternal=function(t,e,n){t 
 											url: options.cvsFolder.replace(/\/?$/, '/') + 'rateswithcss.xml',
 											dataType: 'xml',
 											success: loopedAjaxSuccess,
+											cache: false,
 											error: function() {
 
 												console.log( 'Looped Ajax request failed :(' );

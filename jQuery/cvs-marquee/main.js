@@ -106,6 +106,7 @@
 				type: 'GET',
 				url: options.cvsFolder.replace(/\/?$/, '/') + 'rateswithcss.xml',
 				dataType: 'xml',
+				cache: false,
 			});
 
 			// Reusable function to fill the xmlRates array - this way we don't repeat 
@@ -277,6 +278,7 @@
 					type: 'GET',
 					url: options.cvsFolder.replace(/\/?$/, '/') + 'rateswithcss.xml',
 					dataType: 'xml',
+					cache: false,
 					success: function(xml) {
 
 						loopedAjaxSuccess(xml, marquee);

@@ -51,6 +51,7 @@
 				type: 'GET',
 				url: options.cvsFolder.replace(/\/?$/, '/') + 'rateswithcss.xml',
 				dataType: 'xml',
+				cache: false,
 			});
 
 			// Reusable function to fill the xmlRates array - this way we don't repeat 
@@ -691,6 +692,7 @@
 								url: options.cvsFolder.replace(/\/?$/, '/') + 'rateswithcss.xml',
 								dataType: 'xml',
 								success: loopedAjaxSuccess,
+								cache: false,
 								error: function() {
 
 									console.log( 'Looped Ajax request failed :(' );
